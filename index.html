@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Snake Water Gun</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🐍💧🔫 Snake Water Gun Game</h1>
+    
+    <div class="scoreboard">
+      <p><strong>Wins:</strong> <span id="wins">0</span></p>
+      <p><strong>Losses:</strong> <span id="losses">0</span></p>
+      <p><strong>Ties:</strong> <span id="ties">0</span></p>
+    </div>
+
+    <div class="buttons">
+      <button onclick="play('s')">🐍 Snake</button>
+      <button onclick="play('w')">💧 Water</button>
+      <button onclick="play('g')">🔫 Gun</button>
+    </div>
+
+    <div id="result" class="result-box"></div>
+  </div>
+
+  <script>
+    let wins = 0, losses = 0, ties = 0;
+
+    async function play(choice) {
+      const response = await fetch('/play', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({choice})
+      });
+
+      const data = await response.json();
+      document.getElementById("result").innerHTML = `
+        <p><strong>You:</strong> ${data.you}</p>
+        <p><strong>Computer:</strong> ${data.computer}</p>
+        <p class="outcome"><strong>Result:</strong> ${data.result}</p>
+      `;
+
+      if (data.result.includes("win")) {
+        wins++;
+      } else if (data.result.includes("lose")) {
+        losses++;
+      } else {
+        ties++;
+      }
+
+      document.getElementById("wins").textContent = wins;
+      document.getElementById("losses").textContent = losses;
+      document.getElementById("ties").textContent = ties;
+    }
+  </script>
+</body>
+</html>
